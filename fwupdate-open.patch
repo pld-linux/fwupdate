@@ -1,0 +1,11 @@
+--- fwupdate-10def9bb08c85761ed7fe22bc458cbc760b99d42/linux/libfwup.c.orig	2015-03-12 15:02:28.000000000 +0100
++++ fwupdate-10def9bb08c85761ed7fe22bc458cbc760b99d42/linux/libfwup.c	2015-04-19 15:22:14.149102505 +0200
+@@ -646,7 +646,7 @@
+ 		if (rc < 0)
+ 			goto new;
+ 
+-		rc = open(filename, O_CREAT|O_TRUNC|O_CLOEXEC|O_RDWR);
++		rc = open(filename, O_CREAT|O_TRUNC|O_CLOEXEC|O_RDWR, 0666);
+ 		if (rc < 0)
+ 			goto new;
+ 		fd = rc;
