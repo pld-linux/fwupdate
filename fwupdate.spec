@@ -20,7 +20,7 @@ BuildRequires:	popt-devel
 BuildRequires:	sed >= 4.0
 Requires:	%{name}-libs = %{version}-%{release}
 #Requires(post):	efibootmgr >= 0.11.0
-ExclusiveArch:	%{ix86} %{x8664} x32 arm aarch64 ia64
+ExclusiveArch:	%{ix86} %{x8664} arm aarch64 ia64
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %define		efidir		pld
