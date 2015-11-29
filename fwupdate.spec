@@ -5,13 +5,12 @@
 Summary:	Tools to manage UEFI firmware updates
 Summary(pl.UTF-8):	Narzędzia do zarządzania aktualizacjami firmware'u przez UEFI
 Name:		fwupdate
-Version:	0.4
+Version:	0.5
 Release:	1
 License:	GPL v2
 Group:		Libraries
 Source0:	https://github.com/rhinstaller/fwupdate/archive/%{version}/%{name}-%{version}.tar.gz
-# Source0-md5:	b016615c506aba60c5a2de3de7ce1bab
-Patch0:		%{name}-open.patch
+# Source0-md5:	254fdbfadf18a47018aca37fcc2e4089
 URL:		https://github.com/rhinstaller/fwupdate
 BuildRequires:	efivar-devel >= 0.19
 BuildRequires:	gnu-efi
@@ -58,9 +57,21 @@ Header files for libfwup library.
 %description devel -l pl.UTF-8
 Pliki nagłówkowe biblioteki libfwup.
 
+%package -n bash-completion-fwupdate
+Summary:	Bash completion for fwupdate command
+Summary(pl.UTF-8):	Bashowe uzupełnianie parametrów polecenia fwupdate
+Group:		Applications/Shells
+Requires:	%{name} = %{version}-%{release}
+Requires:	bash-completion >= 2.0
+
+%description -n bash-completion-fwupdate
+Bash completion for fwupdate command.
+
+%description -n bash-completion-fwupdate -l pl.UTF-8
+Bashowe uzupełnianie parametrów polecenia fwupdate.
+
 %prep
 %setup -q
-%patch0 -p1
 
 %if %{without pesign}
 %{__sed} -i -e 's/pesign/cp $< $@ \&\& : &/' efi/Makefile
@@ -75,7 +86,8 @@ Pliki nagłówkowe biblioteki libfwup.
 	CFLAGS="%{rpmcflags}" \
 	EFIDIR=%{efidir} \
 	GNUEFIDIR=%{_libdir} \
-	libdir=%{_libdir}
+	libdir=%{_libdir} \
+	libexecdir=%{_libexecdir}
 
 %install
 rm -rf $RPM_BUILD_ROOT
@@ -86,10 +98,18 @@ rm -rf $RPM_BUILD_ROOT
 %endif
 	DESTDIR=$RPM_BUILD_ROOT \
 	EFIDIR=%{efidir} \
-	libdir=%{_libdir}
+	libdir=%{_libdir} \
+	libexecdir=%{_libexecdir}
+
+# fix location
+install -d $RPM_BUILD_ROOT%{systemdunitdir}
+%{__mv} $RPM_BUILD_ROOT%{_prefix}/lib/systemd/system/*.service $RPM_BUILD_ROOT%{systemdunitdir}
 
 # empty
 %{__rm} $RPM_BUILD_ROOT%{_localedir}/en/*.po
+
+# debuginfo installed by make install?
+%{__rm} -r $RPM_BUILD_ROOT{%{_prefix}/lib/debug,%{_prefix}/src/debug}
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -108,14 +128,33 @@ efibootmgr -C -b 1337 -d /dev/sda -p 1 -l /EFI/%{efidir}/fwupdate.efi -L "Firmwa
 %defattr(644,root,root,755)
 %doc TODO
 %attr(755,root,root) %{_bindir}/fwupdate
+%dir %{_libexecdir}/fwupdate
+%attr(755,root,root) %{_libexecdir}/fwupdate/cleanup
+%{_datadir}/fwupdate
+%{systemdunitdir}/fwupdate-cleanup.service
 %{_mandir}/man1/fwupdate.1*
 %dir /boot/efi/EFI/%{efidir}
+%ifarch %{ix86}
+/boot/efi/EFI/%{efidir}/fwupia32.efi
+%endif
+%ifarch %{x8664} x32
+/boot/efi/EFI/%{efidir}/fwupx64.efi
+%endif
+%ifarch arm
+/boot/efi/EFI/%{efidir}/fwuparm.efi
+%endif
+%ifarch aarch64
+/boot/efi/EFI/%{efidir}/fwupaa64.efi
+%endif
+%ifnarch %{ix86} %{x8664} x32 arm aarch64
 /boot/efi/EFI/%{efidir}/fwupdate.efi
+%endif
 %dir /boot/efi/EFI/%{efidir}/fw
 
 %files libs
 %defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/libfwup.so.0.4
+%attr(755,root,root) %{_libdir}/libfwup.so.*.*
+%attr(755,root,root) %ghost %{_libdir}/libfwup.so.0
 
 %files devel
 %defattr(644,root,root,755)
@@ -125,3 +164,7 @@ efibootmgr -C -b 1337 -d /dev/sda -p 1 -l /EFI/%{efidir}/fwupdate.efi -L "Firmwa
 %{_mandir}/man3/fwup_*.3*
 %{_mandir}/man3/libfwup.3*
 %{_mandir}/man3/libfwup.h.3*
+
+%files -n bash-completion-fwupdate
+%defattr(644,root,root,755)
+%{_datadir}/bash-completion/completions/fwupdate
