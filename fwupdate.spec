@@ -5,12 +5,12 @@
 Summary:	Tools to manage UEFI firmware updates
 Summary(pl.UTF-8):	Narzędzia do zarządzania aktualizacjami firmware'u przez UEFI
 Name:		fwupdate
-Version:	0.5
+Version:	8
 Release:	1
 License:	GPL v2
 Group:		Libraries
 Source0:	https://github.com/rhinstaller/fwupdate/archive/%{version}/%{name}-%{version}.tar.gz
-# Source0-md5:	254fdbfadf18a47018aca37fcc2e4089
+# Source0-md5:	b68e67b706ac5f551e8fcab20cf43a60
 URL:		https://github.com/rhinstaller/fwupdate
 BuildRequires:	efivar-devel >= 0.19
 BuildRequires:	gnu-efi
@@ -154,12 +154,13 @@ efibootmgr -C -b 1337 -d /dev/sda -p 1 -l /EFI/%{efidir}/fwupdate.efi -L "Firmwa
 %files libs
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/libfwup.so.*.*
-%attr(755,root,root) %ghost %{_libdir}/libfwup.so.0
+%attr(755,root,root) %ghost %{_libdir}/libfwup.so.1
 
 %files devel
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/libfwup.so
 %{_includedir}/fwup.h
+%{_includedir}/fwup-version.h
 %{_pkgconfigdir}/fwup.pc
 %{_mandir}/man3/fwup_*.3*
 %{_mandir}/man3/libfwup.3*
