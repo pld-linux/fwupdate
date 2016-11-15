@@ -11,6 +11,7 @@ License:	GPL v2
 Group:		Libraries
 Source0:	https://github.com/rhinstaller/fwupdate/archive/%{version}/%{name}-%{version}.tar.gz
 # Source0-md5:	b68e67b706ac5f551e8fcab20cf43a60
+Patch0:		%{name}-overflow.patch
 URL:		https://github.com/rhinstaller/fwupdate
 BuildRequires:	efivar-devel >= 0.19
 BuildRequires:	gnu-efi
@@ -72,6 +73,7 @@ Bashowe uzupełnianie parametrów polecenia fwupdate.
 
 %prep
 %setup -q
+%patch0 -p1
 
 %if %{without pesign}
 %{__sed} -i -e 's/pesign/cp $< $@ \&\& : &/' efi/Makefile
