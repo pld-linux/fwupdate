@@ -5,15 +5,16 @@
 Summary:	Tools to manage UEFI firmware updates
 Summary(pl.UTF-8):	Narzędzia do zarządzania aktualizacjami firmware'u przez UEFI
 Name:		fwupdate
-Version:	8
+Version:	9
 Release:	1
 License:	GPL v2
 Group:		Libraries
 Source0:	https://github.com/rhinstaller/fwupdate/archive/%{version}/%{name}-%{version}.tar.gz
-# Source0-md5:	b68e67b706ac5f551e8fcab20cf43a60
+# Source0-md5:	0ce656b18a60256a7cf9fa42fd5d99de
 Patch0:		%{name}-overflow.patch
+Patch1:		%{name}-undefined.patch
 URL:		https://github.com/rhinstaller/fwupdate
-BuildRequires:	efivar-devel >= 0.19
+BuildRequires:	efivar-devel >= 0.30
 BuildRequires:	gnu-efi
 %{?with_pesign:BuildRequires:	pesign}
 BuildRequires:	popt-devel
@@ -37,7 +38,7 @@ firmware'u przez UEFI.
 Summary:	Library to manage UEFI firmware updates
 Summary(pl.UTF-8):	Biblioteka do zarządzania aktualizacjami firmware'u przez UEFI
 Group:		Libraries
-Requires:	efivar-libs >= 0.19
+Requires:	efivar-libs >= 0.30
 
 %description libs
 Library to manage UEFI firmware updates.
@@ -50,7 +51,7 @@ Summary:	Header files for libfwup library
 Summary(pl.UTF-8):	Pliki nagłówkowe biblioteki libfwup
 Group:		Development/Libraries
 Requires:	%{name}-libs = %{version}-%{release}
-Requires:	efivar-devel >= 0.19
+Requires:	efivar-devel >= 0.30
 
 %description devel
 Header files for libfwup library.
@@ -74,6 +75,7 @@ Bashowe uzupełnianie parametrów polecenia fwupdate.
 %prep
 %setup -q
 %patch0 -p1
+%patch1 -p1
 
 %if %{without pesign}
 %{__sed} -i -e 's/pesign/cp $< $@ \&\& : &/' efi/Makefile
