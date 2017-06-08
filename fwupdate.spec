@@ -6,7 +6,7 @@ Summary:	Tools to manage UEFI firmware updates
 Summary(pl.UTF-8):	Narzędzia do zarządzania aktualizacjami firmware'u przez UEFI
 Name:		fwupdate
 Version:	9
-Release:	1
+Release:	2
 License:	GPL v2
 Group:		Libraries
 Source0:	https://github.com/rhinstaller/fwupdate/archive/%{version}/%{name}-%{version}.tar.gz
@@ -16,12 +16,13 @@ Patch1:		%{name}-undefined.patch
 URL:		https://github.com/rhinstaller/fwupdate
 BuildRequires:	efivar-devel >= 0.30
 BuildRequires:	gnu-efi
+BuildRequires:	libsmbios-devel
 %{?with_pesign:BuildRequires:	pesign}
 BuildRequires:	popt-devel
 BuildRequires:	sed >= 4.0
 Requires:	%{name}-libs = %{version}-%{release}
 #Requires(post):	efibootmgr >= 0.12
-ExclusiveArch:	%{ix86} %{x8664} arm aarch64 ia64
+ExclusiveArch:	%{ix86} %{x8664} x32 %{arm} aarch64 ia64
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %define		efidir		pld
@@ -79,6 +80,10 @@ Bashowe uzupełnianie parametrów polecenia fwupdate.
 
 %if %{without pesign}
 %{__sed} -i -e 's/pesign/cp $< $@ \&\& : &/' efi/Makefile
+%endif
+
+%ifarch x32
+%{__sed} -i -e '/^BUILDFLAGS\s*:= /s/:= /:= -m64 /' efi/Makefile
 %endif
 
 %build
@@ -144,13 +149,13 @@ efibootmgr -C -b 1337 -d /dev/sda -p 1 -l /EFI/%{efidir}/fwupdate.efi -L "Firmwa
 %ifarch %{x8664} x32
 /boot/efi/EFI/%{efidir}/fwupx64.efi
 %endif
-%ifarch arm
+%ifarch %{arm}
 /boot/efi/EFI/%{efidir}/fwuparm.efi
 %endif
 %ifarch aarch64
 /boot/efi/EFI/%{efidir}/fwupaa64.efi
 %endif
-%ifnarch %{ix86} %{x8664} x32 arm aarch64
+%ifnarch %{ix86} %{x8664} x32 %{arm} aarch64
 /boot/efi/EFI/%{efidir}/fwupdate.efi
 %endif
 %dir /boot/efi/EFI/%{efidir}/fw
