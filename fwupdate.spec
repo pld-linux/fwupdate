@@ -5,23 +5,22 @@
 Summary:	Tools to manage UEFI firmware updates
 Summary(pl.UTF-8):	Narzędzia do zarządzania aktualizacjami firmware'u przez UEFI
 Name:		fwupdate
-Version:	9
-Release:	2
+Version:	11
+Release:	1
 License:	GPL v2
 Group:		Libraries
-Source0:	https://github.com/rhinstaller/fwupdate/archive/%{version}/%{name}-%{version}.tar.gz
-# Source0-md5:	0ce656b18a60256a7cf9fa42fd5d99de
-Patch0:		%{name}-overflow.patch
-Patch1:		%{name}-undefined.patch
+#Source0Download: https://github.com/rhboot/fwupdate/releases
+Source0:	https://github.com/rhboot/fwupdate/releases/download/%{version}/%{name}-%{version}.tar.bz2
+# Source0-md5:	ec833aea7a59c17128f1bdf521a9ac9f
 URL:		https://github.com/rhinstaller/fwupdate
-BuildRequires:	efivar-devel >= 0.30
-BuildRequires:	gnu-efi
+BuildRequires:	efivar-devel >= 0.33
+BuildRequires:	gnu-efi >= 3.0.5
 BuildRequires:	libsmbios-devel
 %{?with_pesign:BuildRequires:	pesign}
 BuildRequires:	popt-devel
 BuildRequires:	sed >= 4.0
 Requires:	%{name}-libs = %{version}-%{release}
-#Requires(post):	efibootmgr >= 0.12
+#Requires(post):	efibootmgr >= 0.13
 ExclusiveArch:	%{ix86} %{x8664} x32 %{arm} aarch64 ia64
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
@@ -39,7 +38,7 @@ firmware'u przez UEFI.
 Summary:	Library to manage UEFI firmware updates
 Summary(pl.UTF-8):	Biblioteka do zarządzania aktualizacjami firmware'u przez UEFI
 Group:		Libraries
-Requires:	efivar-libs >= 0.30
+Requires:	efivar-libs >= 0.33
 
 %description libs
 Library to manage UEFI firmware updates.
@@ -52,7 +51,7 @@ Summary:	Header files for libfwup library
 Summary(pl.UTF-8):	Pliki nagłówkowe biblioteki libfwup
 Group:		Development/Libraries
 Requires:	%{name}-libs = %{version}-%{release}
-Requires:	efivar-devel >= 0.30
+Requires:	efivar-devel >= 0.33
 
 %description devel
 Header files for libfwup library.
@@ -75,8 +74,6 @@ Bashowe uzupełnianie parametrów polecenia fwupdate.
 
 %prep
 %setup -q
-%patch0 -p1
-%patch1 -p1
 
 %if %{without pesign}
 %{__sed} -i -e 's/pesign/cp $< $@ \&\& : &/' efi/Makefile
@@ -87,7 +84,7 @@ Bashowe uzupełnianie parametrów polecenia fwupdate.
 %endif
 
 %build
-%{__make} \
+%{__make} -j1 \
 %ifarch x32
 	ARCH=x86_64 \
 %endif
@@ -139,7 +136,6 @@ efibootmgr -C -b 1337 -d /dev/sda -p 1 -l /EFI/%{efidir}/fwupdate.efi -L "Firmwa
 %attr(755,root,root) %{_bindir}/fwupdate
 %dir %{_libexecdir}/fwupdate
 %attr(755,root,root) %{_libexecdir}/fwupdate/cleanup
-%{_datadir}/fwupdate
 %{systemdunitdir}/fwupdate-cleanup.service
 %{_mandir}/man1/fwupdate.1*
 %dir /boot/efi/EFI/%{efidir}
