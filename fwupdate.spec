@@ -98,7 +98,7 @@ Bashowe uzupełnianie parametrów polecenia fwupdate.
 %install
 rm -rf $RPM_BUILD_ROOT
 
-%{__make} install \
+%{__make} -j1 install \
 %ifarch x32
 	ARCH=x86_64 \
 %endif
