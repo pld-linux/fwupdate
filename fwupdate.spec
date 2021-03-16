@@ -12,7 +12,7 @@ Group:		Libraries
 #Source0Download: https://github.com/rhboot/fwupdate/releases
 Source0:	https://github.com/rhboot/fwupdate/releases/download/%{version}/%{name}-%{version}.tar.bz2
 # Source0-md5:	9cac5093836898c214f44ebe9afeaf8d
-URL:		https://github.com/rhinstaller/fwupdate
+URL:		https://github.com/rhboot/fwupdate
 BuildRequires:	efivar-devel >= 0.33
 BuildRequires:	gnu-efi >= 3.0.5
 BuildRequires:	libsmbios-devel
