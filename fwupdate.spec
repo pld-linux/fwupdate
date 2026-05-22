@@ -6,7 +6,7 @@ Summary:	Tools to manage UEFI firmware updates
 Summary(pl.UTF-8):	Narzędzia do zarządzania aktualizacjami firmware'u przez UEFI
 Name:		fwupdate
 Version:	12
-Release:	1
+Release:	2
 License:	GPL v2
 Group:		Libraries
 #Source0Download: https://github.com/rhboot/fwupdate/releases
@@ -89,7 +89,7 @@ Bashowe uzupełnianie parametrów polecenia fwupdate.
 	ARCH=x86_64 \
 %endif
 	CC="%{__cc}" \
-	CFLAGS="%{rpmcflags}" \
+	CFLAGS="%{rpmcflags} %{rpmcppflags}" \
 	EFIDIR=%{efidir} \
 	GNUEFIDIR=%{_libdir} \
 	libdir=%{_libdir} \
